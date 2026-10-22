@@ -156,4 +156,4 @@ docker logs --tail 50 hgw_tienda_anyta_tunel
 - La página dice *Bad gateway* / error 502: en Cloudflare revisa que la URL del *Public Hostname* sea `web:80` con tipo `HTTP`.
 - El dominio no abre nada: el dominio aún no está **Active** en Cloudflare (paso 1).
 
-Para apagar la publicación sin tocar la web local: `docker compose stop tunel`. Para quitarla del todo, borra la línea `COMPOSE_PROFILES=tunel` del `.env` y ejecuta `docker compose up -d --remove-orphans`.
+Para apagar la publicación sin tocar la web local: `docker compose stop tunel`. Para quitarla del todo, borra la línea `COMPOSE_PROFILES=tunel` del `.env` y ejecuta `docker compose rm -sf tunel`.
