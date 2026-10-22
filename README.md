@@ -82,5 +82,7 @@ Esta web no guarda datos, así que no necesita carpeta en `/mnt/datos/`.
 Cuando el cambio ya está en `main`, en el ProBook:
 
 ```
-cd /opt/hgw_tienda_anyta && git pull && docker compose up -d --build
+/opt/hgw_tienda_anyta/actualizar.sh
 ```
+
+El script hace `git pull`, `docker compose up -d --build` y muestra `docker compose ps`. Si no había cambios nuevos, lo dice y solo confirma que el contenedor esté arriba. Viene en el repo, así que ya está en el ProBook desde el primer clon.
