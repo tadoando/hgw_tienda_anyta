@@ -93,6 +93,26 @@ main .wrap{padding-block:40px 120px;display:grid;gap:56px}
 .tools{display:grid;gap:12px;width:100%}
 .search{width:100%;max-width:420px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:10px 16px;font:600 .95rem var(--body)}
 .count{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+.card,.kit{transition:transform .2s ease,box-shadow .2s ease}
+@media (hover:hover){
+  .card:hover,.kit:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 14px 30px color-mix(in srgb,var(--fg) 14%,transparent);position:relative;z-index:1}
+}
+@media (prefers-reduced-motion:reduce){.card,.kit{transition:none}.card:hover,.kit:hover{transform:none}}
+.card .ph,.kit > img{cursor:zoom-in}
+.card h3{cursor:pointer}
+.qty{display:inline-flex;align-items:center;gap:2px;background:var(--green);border-radius:10px;padding:3px}
+.qty button{border:0;background:transparent;color:var(--bg);font:800 1.05rem var(--body);width:32px;height:32px;border-radius:8px;cursor:pointer}
+.qty button:hover{background:color-mix(in srgb,var(--bg) 18%,transparent)}
+.qty output{min-width:24px;text-align:center;color:var(--bg);font-weight:800;font-variant-numeric:tabular-nums}
+.lb{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgb(8 12 10 / .78)}
+.lb-box{background:var(--surface);color:var(--fg);border-radius:18px;max-width:960px;width:100%;max-height:100%;overflow:auto;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+.lb-img{background:var(--gold-soft);display:grid;place-items:center;min-height:280px}
+.lb-img img{width:100%;max-height:80vh;object-fit:contain;display:block}
+.lb-info{padding:24px;display:grid;gap:10px;align-content:start;min-width:0}
+.lb-info h3{font-size:1.8rem}
+.lb-info p{margin:0;color:var(--muted)}
+.lb-close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));border:0;width:44px;height:44px;border-radius:50%;background:var(--surface);color:var(--fg);font-size:1.5rem;cursor:pointer}
+@media (max-width:720px){.lb-box{grid-template-columns:1fr}.lb-img img{max-height:55vh}}
 .add{border:0;background:var(--green-soft);color:var(--green);border-radius:10px;padding:9px 12px;font:800 .9rem var(--body);cursor:pointer}
 .add.on{background:var(--green);color:var(--bg)}
 
@@ -192,6 +212,11 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
   <span id="foot-wa">WhatsApp: +57 301 505 4538</span>
 </div></footer>
 
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lb-title">
+  <button class="lb-close" id="lb-close" aria-label="Cerrar">×</button>
+  <div class="lb-box" id="lb-box"></div>
+</div>
+
 <div class="cart" role="region" aria-label="Tu pedido">
   <div class="cart-in">
     <div class="cart-list" id="cart-list" aria-live="polite">Tu pedido está vacío. Agrega productos del catálogo.</div>
@@ -290,7 +315,10 @@ const PRODUCTS = [
 ];
 
 const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
-const cart = new Set();
+// Pedido: id -> cantidad. Se guarda en este navegador para no perderlo al recargar.
+const cart = new Map();
+try { for (const [id, n] of JSON.parse(localStorage.getItem("pedido-anyta") || "[]")) if (n > 0) cart.set(id, n); } catch (e) {}
+function saveCart(){ try { localStorage.setItem("pedido-anyta", JSON.stringify([...cart])); } catch (e) {} }
 const all = [...KITS, ...PRODUCTS];
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
@@ -299,9 +327,11 @@ function waLink(text){
   return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text);
 }
 function addBtn(id){
-  const on = cart.has(id);
-  return `<button class="add${on ? " on" : ""}" data-id="${id}" aria-pressed="${on}">${on ? "✓ En tu pedido" : "Agregar"}</button>`;
+  const n = cart.get(id) || 0;
+  if (!n) return `<button class="add" data-add="${id}">Agregar</button>`;
+  return `<span class="qty" role="group" aria-label="Cantidad"><button data-dec="${id}" aria-label="Quitar uno">−</button><output>${n}</output><button data-inc="${id}" aria-label="Agregar uno">+</button></span>`;
 }
+const bigImg = p => p.img && p.img.startsWith("img/p/") ? p.img.replace("img/p/", "img/z/") : p.img;
 function priceHtml(p){
   return p ? `<span class="price">${fmt(p)}</span>` : `<span class="price ask">Precio por WhatsApp</span>`;
 }
@@ -312,7 +342,7 @@ function photo(p){
 
 function renderKits(){
   document.getElementById("kit-list").innerHTML = KITS.map(k => `
-    <article class="kit">
+    <article class="kit" data-open="${k.id}">
       <img src="${k.img}" alt="${esc(k.name)}" loading="lazy">
       <div class="kit-body">
         <h3>${esc(k.name)}</h3>
@@ -334,7 +364,7 @@ function renderGrid(){
   const list = PRODUCTS.filter(p => (filter === "Todos" || p.cat === filter) && (!q || norm(p.name + " " + p.text + " " + p.cat).includes(q)));
   document.getElementById("count").textContent = list.length ? `${list.length} productos` : "No encontramos ese producto. Prueba con otra palabra o pregúntanos por WhatsApp.";
   document.getElementById("grid").innerHTML = list.map(p => `
-    <article class="card">
+    <article class="card" data-open="${p.id}">
       <div class="ph">${photo(p)}</div>
       <div class="card-body">
         <span class="cat">${esc(p.cat)}</span>
@@ -345,37 +375,74 @@ function renderGrid(){
     </article>`).join("");
 }
 
+function cartItems(){
+  return all.filter(x => cart.has(x.id)).map(x => ({...x, n: cart.get(x.id)}));
+}
+function orderMessage(){
+  const items = cartItems();
+  if (!items.length) return "Hola Anyta, quiero información sobre los productos HGW.";
+  const total = items.reduce((t, i) => t + (i.price || 0) * i.n, 0);
+  return "Hola Anyta, quiero hacer este pedido:\n" +
+    items.map(i => `• ${i.n} × ${i.name}` + (i.price ? ` (${fmt(i.price)} c/u = ${fmt(i.price * i.n)})` : "")).join("\n") +
+    `\nTotal: ${fmt(total)}\n¿Me confirmas disponibilidad y envío?`;
+}
 function renderCart(){
-  const items = all.filter(x => cart.has(x.id));
-  const total = items.reduce((t, i) => t + (i.price || 0), 0);
+  const items = cartItems();
+  const units = items.reduce((t, i) => t + i.n, 0);
+  const total = items.reduce((t, i) => t + (i.price || 0) * i.n, 0);
   const el = document.getElementById("cart-list");
   if (!items.length){
     el.textContent = "Tu pedido está vacío. Agrega productos del catálogo.";
   } else {
-    el.innerHTML = `<b>${items.length} ${items.length === 1 ? "producto" : "productos"} · ${fmt(total)}:</b> ` + items.map(i => esc(i.name)).join(", ");
+    el.innerHTML = `<b>${units} ${units === 1 ? "unidad" : "unidades"} · ${fmt(total)}:</b> ` + items.map(i => esc(`${i.n}× ${i.name}`)).join(", ");
   }
-  const msg = items.length
-    ? "Hola Anyta, quiero hacer este pedido:\n" + items.map(i => "• " + i.name + (i.price ? " (" + fmt(i.price) + ")" : "")).join("\n") + "\nTotal aproximado: " + fmt(total) + "\n¿Me confirmas disponibilidad y envío?"
-    : "Hola Anyta, quiero información sobre los productos HGW.";
-  document.getElementById("send").href = waLink(msg);
+  const link = waLink(orderMessage());
+  document.getElementById("send").href = link;
+  const hero = document.getElementById("hero-wa");
+  hero.href = link;
+  hero.textContent = items.length ? "Enviar mi pedido por WhatsApp" : "Escríbenos por WhatsApp";
+}
+function renderAll(){ renderKits(); renderGrid(); renderCart(); if (openId) openLightbox(openId); saveCart(); }
+
+let openId = null, lastFocus = null;
+function openLightbox(id){
+  const x = all.find(i => i.id === id); if (!x) return;
+  const isKit = !!x.items;
+  const src = isKit ? x.img : bigImg(x);
+  document.getElementById("lb-box").innerHTML = `
+    <div class="lb-img">${src ? `<img src="${src}" alt="${esc(x.name)}">` : photo(x)}</div>
+    <div class="lb-info">
+      <span class="cat">${esc(isKit ? "Kit" : x.cat)}</span>
+      <h3 id="lb-title">${esc(x.name)}</h3>
+      <p>${esc(x.text)}${x.size ? " " + esc(x.size) + "." : ""}</p>
+      ${isKit ? `<div class="chips">${x.items.map(i => `<span class="chip">${esc(byId[i].name)}</span>`).join("")}</div>` : ""}
+      <div class="price-row">${priceHtml(x.price)}${addBtn(x.id)}</div>
+    </div>`;
+  const lb = document.getElementById("lb");
+  if (lb.hidden){ lastFocus = document.activeElement; lb.hidden = false; document.getElementById("lb-close").focus(); }
+  openId = id;
+}
+function closeLightbox(){
+  document.getElementById("lb").hidden = true; openId = null;
+  if (lastFocus) lastFocus.focus();
 }
 
 document.addEventListener("click", e => {
-  const b = e.target.closest(".add");
-  if (b){
-    const id = b.dataset.id;
-    cart.has(id) ? cart.delete(id) : cart.add(id);
-    renderKits(); renderGrid(); renderCart();
-    return;
-  }
-  const f = e.target.closest("#filters button");
-  if (f){ filter = f.dataset.cat; renderFilters(); renderGrid(); }
+  const t = e.target;
+  const add = t.closest("[data-add]"), inc = t.closest("[data-inc]"), dec = t.closest("[data-dec]");
+  if (add || inc){ const id = (add || inc).dataset.add || (add || inc).dataset.inc; cart.set(id, (cart.get(id) || 0) + 1); renderAll(); return; }
+  if (dec){ const id = dec.dataset.dec, n = (cart.get(id) || 0) - 1; n > 0 ? cart.set(id, n) : cart.delete(id); renderAll(); return; }
+  if (t.closest("#lb-close") || t.id === "lb"){ closeLightbox(); return; }
+  const f = t.closest("#filters button");
+  if (f){ filter = f.dataset.cat; renderFilters(); renderGrid(); return; }
+  const card = t.closest("[data-open]");
+  if (card && !t.closest("a,button")) openLightbox(card.dataset.open);
 });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && openId) closeLightbox(); });
 document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderGrid(); });
 
-document.getElementById("hero-wa").href = waLink("Hola Anyta, quiero información sobre los productos HGW.");
 if (WHATSAPP) document.getElementById("foot-wa").textContent = "WhatsApp: +57 301 505 4538";
-renderKits(); renderFilters(); renderGrid(); renderCart();
+renderFilters(); renderKits(); renderGrid(); renderCart();
 </script>
 </body>
 </html>
