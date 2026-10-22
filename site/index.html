@@ -111,6 +111,9 @@ main .wrap{padding-block:40px 120px;display:grid;gap:56px}
 .lb-info{padding:24px;display:grid;gap:10px;align-content:start;min-width:0}
 .lb-info h3{font-size:1.8rem}
 .lb-info p{margin:0;color:var(--muted)}
+.lb-info dl{margin:4px 0 0;display:grid;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.lb-info dt{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.lb-info dd{margin:2px 0 0;color:var(--muted);font-size:.93rem}
 .lb-close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));border:0;width:44px;height:44px;border-radius:50%;background:var(--surface);color:var(--fg);font-size:1.5rem;cursor:pointer}
 @media (max-width:720px){.lb-box{grid-template-columns:1fr}.lb-img img{max-height:55vh}}
 .add{border:0;background:var(--green-soft);color:var(--green);border-radius:10px;padding:9px 12px;font:800 .9rem var(--body);cursor:pointer}
@@ -314,6 +317,72 @@ const PRODUCTS = [
   {id:"bolsa", cat:C.hogar, name:"Bolsa HGW", size:"1 unidad", price:7800, text:"Bolsa reutilizable de la marca."}
 ];
 
+// Ficha de cada producto, tomada del catálogo HGW 2026 y redactada sin promesas de salud.
+// d: descripción, ing: ingredientes o materiales, uso: modo de uso, ojo: precauciones.
+const DETAILS = {
+  ganoderma: {d:"Café soluble práctico e instantáneo, fortificado con extracto de Ganoderma lucidum (reishi). Suave textura y agradable aroma.", ing:"Café instantáneo en polvo, crema no láctea, ganoderma, azúcar blanca granulada y aromatizantes.", uso:"Vierte 1 sobre en una taza, agrega unos 150 ml de agua caliente, mezcla y disfruta.", ojo:"No consumir si eres alérgico a alguno de los ingredientes. Vida útil: 24 meses."},
+  berrycoffee: {d:"Café soluble cremoso combinado con arándanos en polvo. Práctico, de suave textura y sabor delicioso.", ing:"Crema no láctea, café instantáneo en polvo, arándanos en polvo, eritritol, xilitol, sal, acesulfamo de potasio, dióxido de silicio y saborizante.", uso:"Vierte 1 sobre en una taza, agrega unos 150 ml de agua caliente y mezcla.", ojo:"No consumir si eres alérgico a alguno de los ingredientes. Vida útil: 12 meses."},
+  berrygano: {d:"Café negro sin azúcar con ganoderma y arándano, para empezar el día con energía.", uso:"Adultos: 1 a 2 porciones al día. Vierte 1 sobre en una taza con unos 150 ml de agua caliente y mezcla.", ojo:"No consumir si el sello está roto. No exceder las porciones recomendadas. Vida útil: 24 meses."},
+  blacktea: {d:"Bebida instantánea de café con té negro, sin azúcar.", ing:"Café soluble instantáneo y té negro (Camellia sinensis) en polvo.", uso:"Adultos: 1 a 2 porciones al día. Vierte 1 sobre en una taza con unos 150 ml de agua caliente y mezcla.", ojo:"Conservar en lugar fresco y seco. Vida útil: 24 meses."},
+  lactiberry: {d:"Bebida instantánea y nutritiva a base de arándanos, producto lácteo de Nueva Zelanda y té negro. Puede contener trocitos de arándano.", ing:"Crema no láctea, azúcar, arándanos en polvo (1,5 %), suero de leche, té negro, leche desnatada en polvo, maltodextrina, E 551 y saborizante.", uso:"Vierte 1 sobre en una taza, agrega unos 150 ml de agua caliente y mezcla.", ojo:"No consumir si eres alérgico a alguno de los ingredientes. Vida útil: 12 meses."},
+  proteina: {d:"Bebida en polvo con proteína aislada de soya, proteína de maní y arándano. Ligeramente dulce, libre de octógonos.", ing:"Proteína aislada de soya, proteína de maní, lecitina de soya, konjac, arándano y xilitol.", uso:"Disuelve 1 sobre en agua o leche y mezcla bien."},
+  berryjuice: {d:"Bebida instantánea de frutos rojos con vitamina C, pensada también para los niños.", ing:"Maltodextrina, ácido ascórbico (vitamina C), jugo de arándano y de uva en polvo, extractos de arándano, cereza, frambuesa y mora, ácido málico, ácido cítrico, dextrina resistente, saborizante natural y sucralosa.", uso:"Vierte 1 sobre en un vaso, agrega unos 150 ml de agua tibia y revuelve.", ojo:"Almacenar a menos de 30 °C en lugar fresco y seco. Vida útil: 24 meses."},
+  highpure: {d:"Jugo de arándano listo para tomar, elaborado con arándanos seleccionados. Sin conservantes ni colorantes artificiales, sin gluten y apto para veganos.", uso:"Agita y sirve. Práctico para llevar a cualquier lugar."},
+  concentrado: {d:"Concentrado líquido de arándano: rinde mucho con poca cantidad. Sin conservantes ni colorantes, bajo en calorías y apto para veganos.", uso:"Disuelve en agua o en tu bebida favorita, o tómalo directamente según tu gusto."},
+  chocoblue: {d:"Bebida de chocolate con arándano. El cacao aporta polifenoles, magnesio, hierro y zinc.", uso:"Disuelve 1 sobre en agua o leche caliente."},
+  chocogano: {d:"Bebida de chocolate con ganoderma, para disfrutar en cualquier momento del día.", uso:"Disuelve 1 sobre en agua o leche caliente."},
+  candy: {d:"Caramelos duros de arándano: una forma dulce de llevar los arándanos a todas partes.", ing:"Polvo de arándano, azúcar, D-manitol, maltodextrina, ácido cítrico, HPMC y saborizante.", uso:"Retira el precinto, toma una o más unidades y disfruta.", ojo:"No consumir si eres alérgico a alguno de los ingredientes. Vida útil: 24 meses."},
+  peptipro: {d:"Caramelo con péptidos de alta biodisponibilidad, práctico para jornadas largas de trabajo o estudio.", uso:"Toma una unidad cuando la necesites."},
+  ganubi: {d:"Caramelo con 5 % de hongo ganoderma, raíz de ñame y un toque frutal de acerola.", uso:"Toma una unidad cuando la necesites."},
+  biolacti: {d:"Caramelo funcional con probióticos, bajo en azúcar y sin sacarosa (endulzado con sorbitol y sucralosa).", uso:"Toma una unidad después de las comidas."},
+  herbalcandy: {d:"Caramelo herbal con regaliz y probióticos que refresca el aliento y la boca seca. Ideal para quienes hablan mucho: vendedores, docentes, atención al cliente.", uso:"Toma una unidad cuando quieras refrescar la boca."},
+  fruittea: {d:"Mermelada de arándanos elaborada de forma tradicional, para los desayunos en familia. Puede contener trozos de fruta.", ing:"Arándano, azúcar, jarabe de malta, pectina y ácido cítrico.", uso:"Retira el precinto, destapa y sirve la porción que quieras. También se puede disolver en agua.", ojo:"Vida útil: 12 meses."},
+  biscuit: {d:"Galletas caseras de arándano con semillas de ajonjolí y linaza. Crujientes y con fibra, para cualquier momento del día.", uso:"Caja con 24 bolsitas individuales."},
+  pasta: {d:"Crema dental herbal de menta fresca con xilitol, a base de madreselva, raíz de isatis y menta. Sin flúor, sin triclosán y sin pigmentos añadidos.", uso:"Cepilla tus dientes después de cada comida, al menos tres veces al día, o como te recomiende tu odontólogo."},
+  "probiotics-tp": {d:"Crema dental todo en uno con postbióticos que limpia, ayuda a remover la placa y refresca el aliento. Libre de triclosán.", ing:"Sorbitol, sílice hidratada, agua, propilenglicol, lauril sulfato de sodio, aroma, goma de celulosa, chondrus crispus, sacarina sódica, fosfato trisódico y lisados de lactobacilos."},
+  "tourm-tp-white": {d:"Crema dental con turmalina, extracto de raíz de regaliz, diente de león, péptidos de soja, xilitol y menta para un aliento más fresco.", uso:"Adultos: cantidad suficiente para cubrir el cabezal del cepillo. Cepíllate mañana y noche, mejor después de las comidas. Niños: cantidad del tamaño de un guisante, con supervisión."},
+  "tourm-tp-black": {d:"Versión negra de la crema dental de turmalina, con regaliz, diente de león, péptidos de soja, xilitol y menta.", uso:"Adultos: cantidad suficiente para cubrir el cabezal del cepillo. Cepíllate mañana y noche, mejor después de las comidas."},
+  jabon: {d:"Jabón con aceite de oliva natural que limpia delicadamente y deja la piel suave, hidratada y sin sensación grasa.", uso:"Humedece la piel, enjabona suavemente y enjuaga con abundante agua."},
+  "tourm-soap": {d:"Jabón revitalizante de turmalina para la limpieza diaria del rostro y el cuerpo.", uso:"Humedece la piel, enjabona suavemente y enjuaga con abundante agua."},
+  showergel: {d:"Gel de baño con turmalina que limpia las impurezas y deja la piel limpia, tersa y fresca."},
+  shampoo: {d:"Champú suave con queratina hidrolizada, aceite de argán, biotina, aloe vera y plantas chinas. Deja el cabello limpio, hidratado, sedoso y nutrido. pH casi neutro.", uso:"Aplica sobre el cabello húmedo, masajea el cuero cabelludo y enjuaga."},
+  aloe: {d:"Gel de aloe vera para todo tipo de piel, en especial grasa o sensible. Con polisacárido de tremella, ácido hialurónico, vitamina E y agua de hamamelis.", uso:"Después de la limpieza, aplica una capa fina en el rostro evitando los ojos y da golpecitos hasta que se absorba. Después del sol, aplícalo frío en capa gruesa por 15 minutos y enjuaga."},
+  handcream: {d:"Crema de manos con arándano y miel que hidrata y protege la piel de las manos.", uso:"Aplica una cantidad adecuada en las manos limpias y frota hasta que se absorba.", ojo:"Solo uso externo. Si tienes piel sensible, prueba antes detrás de la oreja."},
+  solar: {d:"Protector solar con acabado iluminador, con arbutina y extractos de angélica, imperata y scutellaria.", uso:"Aplícalo 30 minutos antes de salir, después de tu rutina facial, sin dar palmaditas. Repite cada 2 o 3 horas al sol y después de nadar o sudar.", ojo:"No usar en bebés menores de 6 meses. Evita el contorno de los ojos."},
+  "deo-men": {d:"Desodorante en spray para hombre con extractos naturales. Neutraliza los malos olores y deja un ligero perfume.", uso:"Agita, rocía de 1 a 3 veces a 10–15 cm de la axila limpia y seca. Uso diario.", ojo:"Si tienes piel sensible, pruébalo antes detrás de la oreja. Evita ojos y mucosas."},
+  "deo-woman": {d:"Desodorante en spray para mujer con extractos naturales. Neutraliza los malos olores, hidrata y deja un ligero perfume.", uso:"Agita, rocía de 1 a 3 veces a 10–15 cm de la axila limpia y seca. Uso diario.", ojo:"Si tienes piel sensible, pruébalo antes detrás de la oreja. Evita ojos y mucosas."},
+  essencegel: {d:"Gel corporal con esencias vegetales que deja una sensación fresca, relajada, hidratada y suave en la piel.", uso:"Después de la ducha, aplica una cantidad adecuada en hombros, cintura, espalda o piernas con masajes suaves.", ojo:"Prueba antes detrás de la oreja. Evita los ojos y mantén fuera del alcance de los niños."},
+  cleanser: {d:"Paso 1 de la rutina facial de arándano. Espuma suave con ceramidas y aminoácidos que limpia, tonifica e hidrata.", uso:"Con el rostro húmedo, extiende una cantidad adecuada desde la nariz hacia afuera, frota suavemente y enjuaga con agua tibia y luego fría.", ojo:"Solo uso externo. Evita los ojos."},
+  toner: {d:"Paso 2 de la rutina facial. Tónico de arándano que repone la humedad de la piel y ayuda a equilibrar su pH.", uso:"Después de limpiar, aplícalo con palmaditas o con un algodón en todo el rostro.", ojo:"Solo uso externo. Evita los ojos."},
+  eyecream: {d:"Paso 3 de la rutina facial. Crema para el contorno de ojos con arándano que nutre e hidrata esta zona delicada.", uso:"Aplica una pequeña cantidad alrededor de los ojos y masajea con toques suaves de las yemas de los dedos.", ojo:"Solo uso externo. Evita el contacto directo con los ojos."},
+  essence: {d:"Paso 4 de la rutina facial. Esencia concentrada con péptidos y ceramidas que hidrata y deja un efecto tensor en la piel.", uso:"Usa solo lo necesario: aplícala en el rostro y masajea hacia afuera hasta que se absorba.", ojo:"Solo uso externo. Evita los ojos."},
+  lotion: {d:"Paso 5 de la rutina facial. Loción humectante con escualeno, vitamina E, ceramidas y péptidos para pieles secas.", uso:"Masajea suavemente desde el centro del rostro hacia el cuello.", ojo:"Solo uso externo. Evita los ojos."},
+  moisturizer: {d:"Paso 6 de la rutina facial. Crema humectante con ceramidas, aminoácidos, colágeno hidrolizado y arándano. Deja la piel fresca y radiante.", uso:"Aplica sobre el rostro y el cuello, masajeando del centro hacia afuera hasta que se absorba.", ojo:"Solo uso externo. Evita los ojos."},
+  mask: {d:"Mascarilla facial Smilife para complementar tu rutina de cuidado.", uso:"Limpia el rostro, aplica la mascarilla de forma uniforme, deja actuar de 5 a 8 minutos y enjuaga con agua tibia."},
+  "toalla-dia": {d:"Toallas higiénicas de día, ultradelgadas y transpirables, con algodón suave, capas de alta absorción y banda aniónica de turmalina."},
+  "toalla-noche": {d:"Toallas higiénicas de noche, de mayor tamaño y absorción, con algodón suave y banda aniónica de turmalina."},
+  protector: {d:"Protectores diarios ultradelgados y transpirables, con algodón suave y banda aniónica de turmalina."},
+  collar: {d:"Collar hecho a mano con piedras naturales de turmalina. Sencillo, elegante y en varios colores.", ing:"Piedras de turmalina.", uso:"Para limpiarlo, déjalo unas 4 horas en agua con una cucharada de sal marina por cada 500 ml y sécalo con un paño limpio."},
+  "collar-lim": {d:"Edición especial del collar de turmalina hecho a mano (diseños 51 al 57).", ing:"Piedras de turmalina.", uso:"Para limpiarlo, déjalo unas 4 horas en agua con sal marina y sécalo con un paño limpio."},
+  pulsera: {d:"Pulsera hecha a mano con piedras naturales de turmalina. Sencilla, elegante y ajustable.", ing:"Piedras de turmalina.", uso:"Para limpiarla, déjala unas 4 horas en agua con una cucharada de sal marina por cada 500 ml y sécala con un paño limpio."},
+  "pulsera-lim": {d:"Edición especial de la pulsera de turmalina hecha a mano (diseños 51 al 57).", ing:"Piedras de turmalina."},
+  colgante: {d:"Colgante con piedra energética de HGW para llevar en el pecho.", uso:"Llévalo puesto durante el día."},
+  cuello: {d:"Soporte auto-calentable para el cuello. Genera una sensación de calor al contacto con la piel.", ing:"Nylon elástico, neopreno, turmalina, piedras magnéticas y cierre de velcro.", uso:"Coloca la banda alrededor del cuello y ajústala. Sugerido 3 o 4 veces al día, 30 minutos cada vez.", ojo:"No usar si tienes marcapasos ni sobre zonas con implantes metálicos."},
+  cintura: {d:"Cinturón de soporte auto-calentable para la zona lumbar. Genera una sensación de calor al contacto con la piel.", ing:"Nylon elástico, neopreno, turmalina, piedras magnéticas y cierre de velcro.", uso:"Colócalo alrededor de la cintura y ajústalo. Sugerido 3 o 4 veces al día, 30 minutos cada vez.", ojo:"No usar si tienes marcapasos ni sobre zonas con implantes metálicos."},
+  plantillas: {d:"Plantillas de turmalina con fibra de carbón de bambú. Regulan la humedad, ayudan a controlar el olor y mantienen los pies cómodos y abrigados.", uso:"Elige tu talla (36 a 44), ponla en el zapato y ajústala. Lávala a mano con productos suaves, sin lavadora."},
+  almohada: {d:"Almohada con turmalina y material transpirable, diseñada para una postura cómoda al dormir y una sensación de calor agradable.", uso:"Lávala a mano a menos de 40 °C con detergente neutro. Sécala a la sombra, sin secadora y sin plancharla."},
+  unas1: {d:"Set de 24 uñas postizas Press On, reutilizables y en varios tamaños. Acabado de salón en minutos, con adhesivo incluido (diseños 1 al 92).", uso:"Elige la talla para cada uña, limpia la uña natural, aplica el adhesivo y presiona unos segundos. Se pueden limar."},
+  unas2: {d:"Set de 24 uñas postizas Press On con diseños decorados (93 al 105). Reutilizables y con adhesivo incluido.", uso:"Elige la talla para cada uña, limpia la uña natural, aplica el adhesivo y presiona unos segundos."},
+  waterson: {d:"Termo de acero inoxidable con turmalina. Liviano, portátil y de diseño elegante.", ing:"Acero inoxidable y turmalina."},
+  vaso: {d:"Vaso térmico reutilizable que conserva la temperatura de bebidas frías o calientes. Cómodo para el trabajo, la casa o los viajes.", uso:"Lávalo antes del primer uso, sirve tu bebida y ajusta bien la tapa."},
+  taza: {d:"Taza para café de 390 ml con tapa, ideal para preparar y llevar tu café.", uso:"Lávala antes del primer uso. Evita estropajos metálicos y limpiadores fuertes."},
+  hervidor: {d:"Hervidor eléctrico de agua para uso doméstico con apagado automático. Cumple normas de seguridad alimentaria para acero inoxidable y polipropileno.", uso:"Llena entre las marcas mínima y máxima, presiona el interruptor y espera a que se apague solo.", ojo:"Usar en 220 V. No sumergir en agua ni usar con las manos mojadas."},
+  spray: {d:"Generador portátil de desinfectante: produce hipoclorito de sodio por electrólisis con agua y sal, para limpiar superficies del hogar.", ing:"Base generadora, frasco y tapa con gatillo.", uso:"Sigue el manual incluido en la caja. Seca bien las piezas antes de guardarlas."},
+  ozono: {d:"Generador de ozono para uso doméstico, para eliminar olores del ambiente y lavar frutas y verduras.", uso:"Sigue el manual incluido en la caja."},
+  watch: {d:"Reloj inteligente con Bluetooth: llamadas, mensajes, contactos, monitoreo de frecuencia cardiaca y oxígeno, y pantalla que se enciende al levantar la muñeca. Compatible con Android e iOS."},
+  masajeador: {d:"Masajeador eléctrico para pies con reflexología, vibración y calor infrarrojo, para relajar los pies cansados.", uso:"Empieza con 1 o 2 minutos y aumenta poco a poco. Desconéctalo después de usarlo.", ojo:"No apto para embarazadas ni personas con fiebre. No pararse ni sentarse sobre el equipo."}
+};
+
 const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
 // Pedido: id -> cantidad. Se guarda en este navegador para no perderlo al recargar.
 const cart = new Map();
@@ -414,13 +483,19 @@ function openLightbox(id){
     <div class="lb-info">
       <span class="cat">${esc(isKit ? "Kit" : x.cat)}</span>
       <h3 id="lb-title">${esc(x.name)}</h3>
-      <p>${esc(x.text)}${x.size ? " " + esc(x.size) + "." : ""}</p>
+      <p>${esc((DETAILS[x.id] && DETAILS[x.id].d) || x.text)}${x.size ? " " + esc(x.size) + "." : ""}</p>
       ${isKit ? `<div class="chips">${x.items.map(i => `<span class="chip">${esc(byId[i].name)}</span>`).join("")}</div>` : ""}
       <div class="price-row">${priceHtml(x.price)}${addBtn(x.id)}</div>
+      ${detailList(DETAILS[x.id])}
     </div>`;
   const lb = document.getElementById("lb");
   if (lb.hidden){ lastFocus = document.activeElement; lb.hidden = false; document.getElementById("lb-close").focus(); }
   openId = id;
+}
+function detailList(f){
+  if (!f) return "";
+  const rows = [["Ingredientes", f.ing], ["Modo de uso", f.uso], ["Ten en cuenta", f.ojo]].filter(r => r[1]);
+  return rows.length ? `<dl>${rows.map(([t, v]) => `<div><dt>${t}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>` : "";
 }
 function closeLightbox(){
   document.getElementById("lb").hidden = true; openId = null;
