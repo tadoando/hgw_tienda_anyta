@@ -189,7 +189,7 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
 
 <footer><div class="wrap">
   <span>© Tienda Online de Anyta · Distribuidora independiente HGW</span>
-  <span id="foot-wa">WhatsApp: pendiente</span>
+  <span id="foot-wa">WhatsApp: +57 301 505 4538</span>
 </div></footer>
 
 <div class="cart" role="region" aria-label="Tu pedido">
@@ -201,7 +201,7 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
 
 <script>
 // Número de WhatsApp con indicativo y sin "+" ni espacios, p. ej. "573001234567". Vacío = WhatsApp deja elegir el contacto.
-const WHATSAPP = "";
+const WHATSAPP = "573015054538";
 
 const fmt = n => "$" + n.toLocaleString("es-CO");
 
@@ -374,7 +374,7 @@ document.addEventListener("click", e => {
 document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderGrid(); });
 
 document.getElementById("hero-wa").href = waLink("Hola Anyta, quiero información sobre los productos HGW.");
-if (WHATSAPP) document.getElementById("foot-wa").textContent = "WhatsApp: +" + WHATSAPP;
+if (WHATSAPP) document.getElementById("foot-wa").textContent = "WhatsApp: +57 301 505 4538";
 renderKits(); renderFilters(); renderGrid(); renderCart();
 </script>
 </body>
