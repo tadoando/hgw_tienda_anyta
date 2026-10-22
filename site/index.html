@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="img/logo.jpg">
+<title>Tienda Online de Anyta</title>
+<meta name="description" content="Productos HGW de bienestar y cuidado personal. Pide fácil por WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: banda oscura con dorado del sello (logo) arriba, catálogo claro en rejilla, carrito flotante de WhatsApp abajo */
+:root{
+  --bg:#f6f8f4; --surface:#ffffff; --fg:#1b2a22; --muted:#5d6b62; --line:#dfe6dd;
+  --green:#1f6b3f; --green-soft:#e5f0e6; --gold:#b98a2f; --gold-soft:#f5ecd8;
+  --ink:#121a20; --ink-fg:#f3ead5; --wa:#1e9e55; --wa-fg:#ffffff;
+  --display:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1512; --surface:#18211c; --fg:#e8eee9; --muted:#a3b0a7; --line:#2a362f;
+  --green:#6cc48f; --green-soft:#1d3226; --gold:#d9b25e; --gold-soft:#2c2618;
+  --ink:#0a0f13; --ink-fg:#f3ead5; --wa:#25b463; --wa-fg:#06140b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1512; --surface:#18211c; --fg:#e8eee9; --muted:#a3b0a7; --line:#2a362f;
+  --green:#6cc48f; --green-soft:#1d3226; --gold:#d9b25e; --gold-soft:#2c2618;
+  --ink:#0a0f13; --ink-fg:#f3ead5; --wa:#25b463; --wa-fg:#06140b; color-scheme:dark}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* Encabezado */
+.hero{background:var(--ink);color:var(--ink-fg)}
+.hero .wrap{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center;padding-block:36px 40px}
+.seal{width:132px;height:132px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px var(--gold),0 10px 30px rgb(0 0 0 / .45)}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.hero h1{font-size:clamp(2.2rem,5vw,3.6rem);font-weight:700;margin-top:6px}
+.hero h1 em{color:var(--gold);font-style:italic}
+.hero p{max-width:56ch;margin:12px 0 0;color:color-mix(in srgb,var(--ink-fg) 80%,transparent)}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;padding:11px 20px;font:700 .95rem var(--body);cursor:pointer;text-decoration:none}
+.btn-wa{background:var(--wa);color:var(--wa-fg)}
+.btn-ghost{background:transparent;color:var(--ink-fg);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--ink-fg) 45%,transparent)}
+@media (max-width:620px){.hero .wrap{grid-template-columns:1fr;justify-items:start}.seal{width:104px;height:104px}}
+
+/* Franja de confianza */
+.trust{border-bottom:1px solid var(--line);background:var(--surface)}
+.trust ul{list-style:none;margin:0;display:flex;flex-wrap:wrap;gap:8px 28px;padding-block:14px;font-size:.92rem;color:var(--muted)}
+.trust b{color:var(--fg)}
+
+main .wrap{padding-block:40px 120px;display:grid;gap:56px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin-bottom:20px}
+.sec-head h2{font-size:clamp(1.8rem,3.6vw,2.5rem)}
+.sec-head p{margin:4px 0 0;color:var(--muted);max-width:60ch}
+
+/* Kits */
+.kits{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px}
+.kit{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.kit img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}
+.kit-body{padding:20px;display:grid;gap:10px;align-content:start}
+.kit h3{font-size:1.7rem}
+.kit ul{margin:0;padding-left:18px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-size:.78rem;font-weight:700;background:var(--green-soft);color:var(--green);border-radius:999px;padding:3px 10px}
+.price-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:6px}
+.price{font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums}
+.price.ask{font-size:.95rem;color:var(--muted);font-weight:700}
+
+/* Filtros + rejilla */
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters button{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:7px 14px;font:700 .88rem var(--body);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:grid;grid-template-rows:auto 1fr}
+.card .ph{background:var(--gold-soft);display:grid;place-items:center;overflow:hidden}
+.card .ph img{width:100%;height:100%;object-fit:cover}
+.card-body{padding:16px;display:grid;gap:6px;grid-template-rows:auto auto 1fr auto}
+.card .ph{aspect-ratio:4/3}
+.cat{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:800}
+.card h3{font-family:var(--body);font-size:1.05rem;font-weight:800;line-height:1.3}
+.card p{margin:0;color:var(--muted);font-size:.92rem}
+.ph-empty{width:100%;height:100%;display:grid;place-items:center;align-content:center;gap:4px;text-align:center;padding:16px;font-family:var(--display);font-size:1.5rem;font-weight:700;color:var(--gold);line-height:1.1}
+.ph-empty small{font-family:var(--body);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.card-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:6px}
+.card .price{font-size:1.1rem}
+.tools{display:grid;gap:12px;width:100%}
+.search{width:100%;max-width:420px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:10px 16px;font:600 .95rem var(--body)}
+.count{color:var(--muted);font-size:.9rem;margin:0 0 14px}
+.add{border:0;background:var(--green-soft);color:var(--green);border-radius:10px;padding:9px 12px;font:800 .9rem var(--body);cursor:pointer}
+.add.on{background:var(--green);color:var(--bg)}
+
+/* HGW + aviso */
+.about{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:24px}
+.about > div{min-width:0}
+.about h2{font-size:clamp(1.7rem,3.2vw,2.2rem);margin-bottom:10px}
+.about p{margin:0 0 10px;color:var(--muted);max-width:62ch}
+.howto{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.howto li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
+.howto li::before{content:counter(s);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold);font-weight:800}
+.note{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+
+footer{background:var(--ink);color:var(--ink-fg)}
+footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between;font-size:.9rem}
+
+/* Carrito flotante */
+.cart{position:fixed;left:0;right:0;bottom:0;z-index:20;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));padding-top:12px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:color-mix(in srgb,var(--surface) 94%,transparent);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+.cart-in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.cart-list{min-width:0;flex:1 1 260px;font-size:.92rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cart-list b{color:var(--fg)}
+@media (prefers-reduced-motion:no-preference){.add,.btn,.filters button{transition:background .15s,color .15s,transform .15s}.btn:hover{transform:translateY(-1px)}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="seal" src="img/logo.jpg" alt="Sello de Tienda Online de Anyta" width="203" height="216">
+    <div>
+      <div class="eyebrow">Distribuidora de productos HGW</div>
+      <h1>Tienda Online de <em>Anyta</em></h1>
+      <p>Cafés, nutrición y cuidado personal de la línea HGW (Health &amp; Wellness). Elige lo que te gusta, arma tu pedido y envíalo por WhatsApp. Te respondemos con precio y envío.</p>
+      <div class="hero-cta">
+        <a class="btn btn-wa" id="hero-wa" href="#" target="_blank" rel="noopener">Escríbenos por WhatsApp</a>
+        <a class="btn btn-ghost" href="#catalogo">Ver catálogo</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="trust"><div class="wrap"><ul>
+  <li><b>Productos originales</b> HGW</li>
+  <li><b>Pedidos</b> por WhatsApp</li>
+  <li><b>Envíos</b> a toda Colombia</li>
+  <li><b>Asesoría</b> personalizada</li>
+</ul></div></div>
+
+<main><div class="wrap">
+
+  <section id="kits" aria-labelledby="kits-t">
+    <div class="sec-head">
+      <div>
+        <h2 id="kits-t">Kits de bienestar</h2>
+        <p>Combinaciones de productos HGW pensadas para acompañar tu rutina diaria.</p>
+      </div>
+    </div>
+    <div class="kits" id="kit-list"></div>
+  </section>
+
+  <section id="catalogo" aria-labelledby="cat-t">
+    <div class="sec-head">
+      <div>
+        <h2 id="cat-t">Catálogo</h2>
+        <p>Precios al público en Colombia, lista HGW 2026. Toca «Agregar» en lo que quieras y envía la lista completa en un solo mensaje.</p>
+      </div>
+      <div class="tools">
+        <input class="search" id="search" type="search" placeholder="Buscar producto, por ejemplo: café, jabón, turmalina" aria-label="Buscar producto">
+        <div class="filters" id="filters" role="group" aria-label="Filtrar por categoría"></div>
+      </div>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="about" aria-label="Sobre HGW y cómo comprar">
+    <div>
+      <h2>¿Qué es HGW?</h2>
+      <p>HGW (Health &amp; Wellness, también conocida como Green World) es una empresa de venta directa de productos de bienestar: cafés con extracto de ganoderma, bebidas en polvo, dulces de arándano, jabones, cremas dentales y productos de higiene femenina.</p>
+      <p>Anyta es distribuidora independiente: te asesora, toma tu pedido y te lo hace llegar.</p>
+    </div>
+    <div>
+      <h2>Cómo comprar</h2>
+      <ol class="howto">
+        <li><span>Agrega los productos o el kit que te interesan.</span></li>
+        <li><span>Toca «Enviar pedido por WhatsApp». El mensaje sale escrito con tu lista.</span></li>
+        <li><span>Te confirmamos precio, forma de pago y envío.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <p class="note">Los productos de esta tienda son alimentos, suplementos y artículos de cuidado personal. No son medicamentos y no reemplazan el diagnóstico ni el tratamiento médico. Si tienes una condición de salud, estás en embarazo o tomas medicamentos, consulta a tu médico antes de consumirlos.</p>
+</div></main>
+
+<footer><div class="wrap">
+  <span>© Tienda Online de Anyta · Distribuidora independiente HGW</span>
+  <span id="foot-wa">WhatsApp: pendiente</span>
+</div></footer>
+
+<div class="cart" role="region" aria-label="Tu pedido">
+  <div class="cart-in">
+    <div class="cart-list" id="cart-list" aria-live="polite">Tu pedido está vacío. Agrega productos del catálogo.</div>
+    <a class="btn btn-wa" id="send" href="#" target="_blank" rel="noopener">Enviar pedido por WhatsApp</a>
+  </div>
+</div>
+
+<script>
+// Número de WhatsApp con indicativo y sin "+" ni espacios, p. ej. "573001234567". Vacío = WhatsApp deja elegir el contacto.
+const WHATSAPP = "";
+
+const fmt = n => "$" + n.toLocaleString("es-CO");
+
+// Kits armados por Anyta. "items" usa los id de PRODUCTS.
+const KITS = [
+  {id:"kit-higado", name:"Kit Cuidado de tu Hígado", img:"img/kit-higado.jpg", price:300000,
+   items:["ganoderma","blacktea","lactiberry"],
+   text:"Tres bebidas para tus mañanas, con extracto de ganoderma, té negro y arándano, como parte de una alimentación balanceada."},
+  {id:"kit-arandano", name:"Kit Arándano", img:"img/kit-vision.jpg", price:132000,
+   items:["lactiberry","candy"],
+   text:"Arándano en dos formatos: una bebida para el desayuno y dulces para llevar contigo durante el día."}
+];
+
+// Lista de precios HGW Colombia 2026, columna PRECIO PÚBLICO.
+const C = {cafe:"Cafés y bebidas", dulce:"Dulces y snacks", personal:"Cuidado personal", facial:"Cuidado facial", turm:"Turmalina y accesorios", hogar:"Hogar y equipos"};
+const PRODUCTS = [
+  {id:"ganoderma", cat:C.cafe, name:"Ganoderma Soluble Coffee", img:"img/ganoderma.jpg", size:"Caja 12 sobres × 15 g", price:96000, text:"Café soluble con extracto de ganoderma."},
+  {id:"berrycoffee", cat:C.cafe, name:"Berry Coffee", size:"Caja 12 sobres × 15 g", price:96000, text:"Café soluble con arándano, cremoso y suave."},
+  {id:"berrygano", cat:C.cafe, name:"Berry Gano Coffee", size:"Caja 12 sobres × 3,5 g", price:84000, text:"Café negro con ganoderma y arándano."},
+  {id:"blacktea", cat:C.cafe, name:"Black Tea Coffee", img:"img/blacktea.jpg", size:"Caja 12 sobres × 3,5 g", price:84000, text:"Café con té negro, sin azúcar."},
+  {id:"lactiberry", cat:C.cafe, name:"Lactiberry", img:"img/lactiberry.jpg", size:"Caja 10 sobres × 30 g", price:108000, text:"Bebida en polvo de arándano, lácteo y té negro."},
+  {id:"proteina", cat:C.cafe, name:"Blueberry Soybean Milk Drink", img:"img/proteina.jpg", size:"Caja 12 sobres × 20 g", price:150000, text:"Proteína de soya sabor arándano, endulzada con stevia."},
+  {id:"berryjuice", cat:C.cafe, name:"Berry Juice", size:"30 sobres × 6 g", price:102000, text:"Bebida instantánea de arándano."},
+  {id:"highpure", cat:C.cafe, name:"High Pure Blueberry", size:"6 botellas × 185 ml", price:234000, text:"Jugo de arándano listo para tomar."},
+  {id:"concentrado", cat:C.cafe, name:"Concentrado de Arándanos", size:"10 frascos × 50 ml", price:216000, text:"Concentrado de arándano para diluir."},
+  {id:"chocoblue", cat:C.cafe, name:"Choco Blue", size:"20 sobres × 33 g", price:168000, text:"Bebida de chocolate con arándano."},
+  {id:"chocogano", cat:C.cafe, name:"Choco Gano", size:"20 sobres × 33 g", price:168000, text:"Bebida de chocolate con ganoderma."},
+
+  {id:"candy", cat:C.dulce, name:"Blueberry Candy", img:"img/candy.jpg", size:"Frasco 60 unidades", price:24000, text:"Caramelo duro sabor arándano."},
+  {id:"herbalcandy", cat:C.dulce, name:"Herbal Fresh Candy", size:"Frasco 60 unidades", price:24000, text:"Caramelo herbal refrescante."},
+  {id:"peptipro", cat:C.dulce, name:"Peptipro Candy", size:"Frasco 60 unidades", price:24000, text:"Caramelo con péptidos."},
+  {id:"ganubi", cat:C.dulce, name:"Ganubi Candy", size:"Frasco 60 unidades", price:34800, text:"Caramelo con ganoderma."},
+  {id:"biolacti", cat:C.dulce, name:"Biolacti Candy", size:"Frasco 60 unidades", price:24000, text:"Caramelo con probióticos."},
+  {id:"fruittea", cat:C.dulce, name:"Blueberry Fruit Tea (mermelada)", size:"Frasco 200 g", price:48000, text:"Mermelada de arándano para untar o disolver."},
+  {id:"biscuit", cat:C.dulce, name:"Galletas de arándano", size:"Caja 480 g", price:90000, text:"Galletas de arándano con ajonjolí y linaza."},
+
+  {id:"pasta", cat:C.personal, name:"Crema dental Green World Herbs", img:"img/pasta.jpg", size:"120 g", price:33000, text:"Menta fresca con xilitol, sin flúor ni triclosán."},
+  {id:"probiotics-tp", cat:C.personal, name:"Crema dental Probiotics", size:"120 g", price:30000, text:"Crema dental con probióticos."},
+  {id:"tourm-tp-white", cat:C.personal, name:"Crema dental Turmalina White", size:"120 g", price:30000, text:"Crema dental con turmalina."},
+  {id:"tourm-tp-black", cat:C.personal, name:"Crema dental Turmalina Black", size:"120 g", price:30000, text:"Crema dental con turmalina y carbón."},
+  {id:"jabon", cat:C.personal, name:"Olive Soap", img:"img/jabon.jpg", size:"Barra 100 g", price:19800, text:"Jabón de oliva para el cuidado diario."},
+  {id:"tourm-soap", cat:C.personal, name:"Jabón de turmalina", size:"Barra 100 g", price:19800, text:"Jabón en barra con turmalina."},
+  {id:"mugwort", cat:C.personal, name:"Mugwort Soap", size:"1 unidad", price:30000, text:"Jabón de artemisa."},
+  {id:"showergel", cat:C.personal, name:"Smilife Tourmaline Shower Gel", size:"255 ml", price:54000, text:"Gel de baño con turmalina."},
+  {id:"shampoo", cat:C.personal, name:"Smilife Keratin Shampoo", img:"img/shampoo.jpg", size:"255 ml", price:72000, text:"Con keratina, argán, biotina y aloe vera."},
+  {id:"aloe", cat:C.personal, name:"Smilife Aloe Vera Gel", size:"50 g", price:24000, text:"Gel hidratante de aloe vera."},
+  {id:"handcream", cat:C.personal, name:"Smilife Blueberry Honey Hand Cream", size:"80 g", price:42000, text:"Crema de manos con arándano y miel."},
+  {id:"solar", cat:C.personal, name:"Smilife Protector Solar", size:"1 unidad", price:84000, text:"Protector solar facial y corporal."},
+  {id:"deo-men", cat:C.personal, name:"Smilife Deodorant Men", size:"60 ml", price:96000, text:"Desodorante para hombre."},
+  {id:"deo-woman", cat:C.personal, name:"Smilife Deodorant Woman", size:"60 ml", price:96000, text:"Desodorante para mujer."},
+  {id:"essencegel", cat:C.personal, name:"Mingdeshijia Soothing Essence Gel", size:"50 ml", price:156000, text:"Gel calmante de uso externo."},
+  {id:"toalla-dia", cat:C.personal, name:"Toallas higiénicas Enjoyable Día", img:"img/toallas.jpg", size:"10 unidades", price:23100, text:"Smilife Anion, algodón suave y ultradelgadas."},
+  {id:"toalla-noche", cat:C.personal, name:"Toallas higiénicas Enjoyable Noche", img:"img/toallas.jpg", size:"8 unidades", price:21120, text:"Smilife Anion para la noche, mayor absorción."},
+  {id:"protector", cat:C.personal, name:"Protectores diarios Enjoyable", img:"img/toallas.jpg", size:"30 unidades", price:23100, text:"Protectores diarios Smilife Anion."},
+
+  {id:"cleanser", cat:C.facial, name:"Smilife Blueberry Facial Cleanser", size:"100 g", price:66000, text:"Limpiador facial de arándano. Paso 1."},
+  {id:"toner", cat:C.facial, name:"Smilife Blueberry Toner", size:"100 ml", price:126000, text:"Tónico facial de arándano. Paso 2."},
+  {id:"eyecream", cat:C.facial, name:"Smilife Blueberry Eye Cream", size:"30 g", price:144000, text:"Contorno de ojos de arándano. Paso 3."},
+  {id:"essence", cat:C.facial, name:"Smilife Blueberry Essence", size:"50 ml", price:204000, text:"Esencia facial de arándano. Paso 4."},
+  {id:"lotion", cat:C.facial, name:"Smilife Blueberry Lotion", size:"100 ml", price:162000, text:"Loción humectante facial. Paso 5."},
+  {id:"moisturizer", cat:C.facial, name:"Smilife Blueberry Moisturizer", size:"50 g", price:126000, text:"Crema humectante facial. Paso 6."},
+  {id:"mask", cat:C.facial, name:"Smilife Blue Gold Mask", size:"1 unidad", price:96000, text:"Mascarilla facial."},
+
+  {id:"collar", cat:C.turm, name:"Collar de turmalina", size:"1 unidad", price:168000, text:"Collar hecho a mano con piedras naturales."},
+  {id:"collar-lim", cat:C.turm, name:"Collar de turmalina edición limitada", size:"1 unidad", price:180000, text:"Diseños códigos 51 al 57."},
+  {id:"pulsera", cat:C.turm, name:"Pulsera de turmalina", size:"1 unidad", price:84000, text:"Pulsera con piedras de turmalina."},
+  {id:"pulsera-lim", cat:C.turm, name:"Pulsera de turmalina edición limitada", size:"1 unidad", price:90000, text:"Diseños códigos 51 al 57."},
+  {id:"colgante", cat:C.turm, name:"Colgante piedra energética", size:"1 unidad", price:210000, text:"Colgante con piedra natural."},
+  {id:"cuello", cat:C.turm, name:"Protector de cuello de turmalina", size:"1 unidad", price:66000, text:"Banda de turmalina para el cuello."},
+  {id:"cintura", cat:C.turm, name:"Protector de cintura de turmalina", size:"1 unidad", price:288000, text:"Faja de turmalina para la cintura."},
+  {id:"plantillas", cat:C.turm, name:"Plantillas de turmalina", size:"1 par", price:36000, text:"Plantillas Tourmaline Healthcare Insoles."},
+  {id:"almohada", cat:C.turm, name:"Almohada magnética de turmalina", size:"1 unidad", price:372000, text:"Tourmaline Magnet Pillow."},
+  {id:"edredon", cat:C.turm, name:"Edredón de turmalina", size:"1 unidad", price:1536000, text:"Tourmaline Quilt."},
+  {id:"unas1", cat:C.turm, name:"Uñas postizas Press On (diseños 1 al 92)", size:"24 piezas", price:36000, text:"Kit de uñas postizas."},
+  {id:"unas2", cat:C.turm, name:"Uñas postizas Press On (diseños 93 al 105)", size:"24 piezas", price:57000, text:"Kit de uñas postizas."},
+
+  {id:"waterson", cat:C.hogar, name:"Termo de turmalina Waterson", size:"448 ml", price:390000, text:"Termo con filtro de turmalina."},
+  {id:"vaso", cat:C.hogar, name:"Vaso térmico HGW", size:"1 unidad", price:132000, text:"Vaso térmico."},
+  {id:"taza", cat:C.hogar, name:"Coffee Cup HGW", size:"390 ml", price:108000, text:"Taza para café."},
+  {id:"hervidor", cat:C.hogar, name:"Hervidor eléctrico de turmalina", size:"1 unidad", price:252000, text:"Hervidor eléctrico."},
+  {id:"spray", cat:C.hogar, name:"Portable Disinfectant Spray", size:"270 ml", price:390000, text:"Generador portátil de desinfectante."},
+  {id:"ozono", cat:C.hogar, name:"Generador de ozono digital", size:"1 unidad", price:540000, text:"Generador de ozono para uso doméstico."},
+  {id:"watch", cat:C.hogar, name:"Smart Watch HGW", size:"1 unidad", price:396000, text:"Reloj inteligente."},
+  {id:"masajeador", cat:C.hogar, name:"Masajeador de circulación", size:"1 unidad", price:4200000, text:"Masajeador eléctrico."},
+  {id:"bolsa", cat:C.hogar, name:"Bolsa HGW", size:"1 unidad", price:7800, text:"Bolsa reutilizable de la marca."}
+];
+
+const byId = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+const cart = new Set();
+const all = [...KITS, ...PRODUCTS];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+function waLink(text){
+  return "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(text);
+}
+function addBtn(id){
+  const on = cart.has(id);
+  return `<button class="add${on ? " on" : ""}" data-id="${id}" aria-pressed="${on}">${on ? "✓ En tu pedido" : "Agregar"}</button>`;
+}
+function priceHtml(p){
+  return p ? `<span class="price">${fmt(p)}</span>` : `<span class="price ask">Precio por WhatsApp</span>`;
+}
+function photo(p){
+  if (p.img) return `<img src="${p.img}" alt="${esc(p.name)}" loading="lazy">`;
+  return `<div class="ph-empty" aria-hidden="true"><small>HGW</small>${esc(p.name.replace(/^Smilife /, ""))}</div>`;
+}
+
+function renderKits(){
+  document.getElementById("kit-list").innerHTML = KITS.map(k => `
+    <article class="kit">
+      <img src="${k.img}" alt="${esc(k.name)}" loading="lazy">
+      <div class="kit-body">
+        <h3>${esc(k.name)}</h3>
+        <p style="margin:0">${esc(k.text)}</p>
+        <div class="chips">${k.items.map(i => `<span class="chip">${esc(byId[i].name)}</span>`).join("")}</div>
+        <div class="price-row">${priceHtml(k.price)}${addBtn(k.id)}</div>
+      </div>
+    </article>`).join("");
+}
+
+let filter = "Todos", query = "";
+function renderFilters(){
+  const cats = ["Todos", ...Object.values(C)];
+  document.getElementById("filters").innerHTML = cats.map(c =>
+    `<button data-cat="${esc(c)}" aria-pressed="${c === filter}">${esc(c)}</button>`).join("");
+}
+function renderGrid(){
+  const q = norm(query.trim());
+  const list = PRODUCTS.filter(p => (filter === "Todos" || p.cat === filter) && (!q || norm(p.name + " " + p.text + " " + p.cat).includes(q)));
+  document.getElementById("count").textContent = list.length ? `${list.length} productos` : "No encontramos ese producto. Prueba con otra palabra o pregúntanos por WhatsApp.";
+  document.getElementById("grid").innerHTML = list.map(p => `
+    <article class="card">
+      <div class="ph">${photo(p)}</div>
+      <div class="card-body">
+        <span class="cat">${esc(p.cat)}</span>
+        <h3>${esc(p.name)}</h3>
+        <p>${esc(p.text)} ${esc(p.size)}.</p>
+        <div class="card-foot">${priceHtml(p.price)}${addBtn(p.id)}</div>
+      </div>
+    </article>`).join("");
+}
+
+function renderCart(){
+  const items = all.filter(x => cart.has(x.id));
+  const total = items.reduce((t, i) => t + (i.price || 0), 0);
+  const el = document.getElementById("cart-list");
+  if (!items.length){
+    el.textContent = "Tu pedido está vacío. Agrega productos del catálogo.";
+  } else {
+    el.innerHTML = `<b>${items.length} ${items.length === 1 ? "producto" : "productos"} · ${fmt(total)}:</b> ` + items.map(i => esc(i.name)).join(", ");
+  }
+  const msg = items.length
+    ? "Hola Anyta, quiero hacer este pedido:\n" + items.map(i => "• " + i.name + (i.price ? " (" + fmt(i.price) + ")" : "")).join("\n") + "\nTotal aproximado: " + fmt(total) + "\n¿Me confirmas disponibilidad y envío?"
+    : "Hola Anyta, quiero información sobre los productos HGW.";
+  document.getElementById("send").href = waLink(msg);
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest(".add");
+  if (b){
+    const id = b.dataset.id;
+    cart.has(id) ? cart.delete(id) : cart.add(id);
+    renderKits(); renderGrid(); renderCart();
+    return;
+  }
+  const f = e.target.closest("#filters button");
+  if (f){ filter = f.dataset.cat; renderFilters(); renderGrid(); }
+});
+document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderGrid(); });
+
+document.getElementById("hero-wa").href = waLink("Hola Anyta, quiero información sobre los productos HGW.");
+if (WHATSAPP) document.getElementById("foot-wa").textContent = "WhatsApp: +" + WHATSAPP;
+renderKits(); renderFilters(); renderGrid(); renderCart();
+</script>
+</body>
+</html>

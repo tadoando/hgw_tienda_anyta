@@ -1,0 +1,20 @@
+name: hgw_tienda_anyta
+
+services:
+  web:
+    build: .
+    image: hgw_tienda_anyta:latest
+    container_name: hgw_tienda_anyta
+    restart: unless-stopped
+    ports:
+      # Atado a la IP del ProBook (Docker se salta el firewall).
+      # Puerto configurable en .env; cada web necesita uno distinto.
+      - "${WEB_IP:-192.168.80.27}:${WEB_PORT:-8082}:80"
+    labels:
+      autoheal: "true"
+    healthcheck:
+      test: ["CMD", "wget", "-qO", "/dev/null", "http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
