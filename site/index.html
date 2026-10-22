@@ -106,8 +106,20 @@ main .wrap{padding-block:40px 120px;display:grid;gap:56px}
 .qty output{min-width:24px;text-align:center;color:var(--bg);font-weight:800;font-variant-numeric:tabular-nums}
 .lb{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgb(8 12 10 / .78)}
 .lb-box{background:var(--surface);color:var(--fg);border-radius:18px;max-width:960px;width:100%;max-height:100%;overflow:auto;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
-.lb-img{background:var(--gold-soft);display:grid;place-items:center;min-height:280px}
-.lb-img img{width:100%;max-height:80vh;object-fit:contain;display:block}
+.lb-img{position:relative;overflow:hidden;display:grid;place-items:center;min-height:300px;padding:28px 30px 64px;background:radial-gradient(120% 70% at 50% 100%,color-mix(in srgb,var(--green) 22%,var(--green-soft)) 0%,var(--green-soft) 45%,var(--gold-soft) 100%)}
+.lb-img > img,.lb-img > .ph-empty{position:relative;z-index:1;max-width:100%;max-height:68vh;width:auto;object-fit:contain;display:block;border-radius:12px;box-shadow:0 18px 26px -10px rgb(20 50 30 / .45),0 3px 8px rgb(20 50 30 / .2)}
+.lb-img > .ph-empty{width:70%;aspect-ratio:1;background:var(--surface)}
+.cama{position:absolute;left:0;right:0;bottom:0;width:100%;pointer-events:none}
+.cama.atras{height:200px;z-index:0}
+.cama.frente{height:96px;z-index:2}
+.cama .h0{fill:#1f5e37}.cama .h1{fill:#2f7d4a}.cama .h2{fill:#4a9a5b}.cama .h3{fill:#72b36a}.cama .h4{fill:#9cc97a}
+.cama .nervio{fill:none;stroke:rgb(255 255 255 / .28);stroke-width:1.6;stroke-linecap:round}
+.lb-img.entra .cama{animation:brota .55s cubic-bezier(.2,.8,.3,1) both}
+.lb-img.entra .cama.frente{animation-delay:.08s}
+.lb-img.entra > img,.lb-img.entra > .ph-empty{animation:posa .6s cubic-bezier(.2,.8,.3,1) .12s both}
+@keyframes brota{from{transform:translateY(35%);opacity:0}to{transform:none;opacity:1}}
+@keyframes posa{from{transform:translateY(-18px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.lb-img.entra .cama,.lb-img.entra > img,.lb-img.entra > .ph-empty{animation:none}}
 .lb-info{padding:24px;display:grid;gap:10px;align-content:start;min-width:0}
 .lb-info h3{font-size:1.8rem}
 .lb-info p{margin:0;color:var(--muted)}
@@ -115,7 +127,7 @@ main .wrap{padding-block:40px 120px;display:grid;gap:56px}
 .lb-info dt{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-weight:800}
 .lb-info dd{margin:2px 0 0;color:var(--muted);font-size:.93rem}
 .lb-close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));border:0;width:44px;height:44px;border-radius:50%;background:var(--surface);color:var(--fg);font-size:1.5rem;cursor:pointer}
-@media (max-width:720px){.lb-box{grid-template-columns:1fr}.lb-img img{max-height:55vh}}
+@media (max-width:720px){.lb-box{grid-template-columns:1fr}.lb-img > img{max-height:42vh}.lb-img{padding:22px 22px 50px;min-height:0}.cama.atras{height:160px}.cama.frente{height:80px}}
 .add{border:0;background:var(--green-soft);color:var(--green);border-radius:10px;padding:9px 12px;font:800 .9rem var(--body);cursor:pointer}
 .add.on{background:var(--green);color:var(--bg)}
 
@@ -474,12 +486,19 @@ function renderCart(){
 function renderAll(){ renderKits(); renderGrid(); renderCart(); if (openId) openLightbox(openId); saveCart(); }
 
 let openId = null, lastFocus = null;
+// Cama de hojas: [x, y, giro, tamaño, tono] sobre un lienzo de 400×160, anclado abajo.
+const HOJAS_ATRAS = [[8,170,-160,1.25,1],[30,168,-128,1.55,0],[70,172,-108,1.35,2],[118,170,-96,1.15,3],[200,176,-90,1.05,1],[282,170,-84,1.15,3],[330,172,-72,1.35,2],[370,168,-52,1.55,0],[392,170,-20,1.25,1],[150,176,-118,1.0,4],[250,176,-62,1.0,4],[-10,150,-40,1.1,2],[410,150,-140,1.1,2]];
+const HOJAS_FRENTE = [[-6,120,-18,0.95,1],[30,124,-32,0.75,3],[406,120,-162,0.95,1],[370,124,-148,0.75,3],[120,126,-8,0.55,2],[280,126,-172,0.55,2]];
+const hoja = ([x, y, r, s, c]) => `<use href="#hoja" class="h${c}" transform="translate(${x} ${y}) rotate(${r}) scale(${s})"/>`;
+const cama = (lado, hojas) => `<svg class="cama ${lado}" viewBox="0 0 400 ${lado === "atras" ? 160 : 130}" preserveAspectRatio="xMidYMax slice" aria-hidden="true">${lado === "atras" ? `<defs><symbol id="hoja" overflow="visible"><path d="M0 0C24-24 72-28 104 0C72 28 24 24 0 0Z"/><path class="nervio" d="M4 0Q50-3 96 0M30-1l14-12M30 1l14 12M56-2l14-12M56 2l14 12"/></symbol></defs>` : ""}${hojas.map(hoja).join("")}</svg>`;
+
 function openLightbox(id){
   const x = all.find(i => i.id === id); if (!x) return;
   const isKit = !!x.items;
   const src = isKit ? x.img : bigImg(x);
+  const nuevo = document.getElementById("lb").hidden;
   document.getElementById("lb-box").innerHTML = `
-    <div class="lb-img">${src ? `<img src="${src}" alt="${esc(x.name)}">` : photo(x)}</div>
+    <div class="lb-img${nuevo ? " entra" : ""}">${cama("atras", HOJAS_ATRAS)}${src ? `<img src="${src}" alt="${esc(x.name)}">` : photo(x)}${cama("frente", HOJAS_FRENTE)}</div>
     <div class="lb-info">
       <span class="cat">${esc(isKit ? "Kit" : x.cat)}</span>
       <h3 id="lb-title">${esc(x.name)}</h3>
