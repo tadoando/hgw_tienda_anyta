@@ -16,7 +16,7 @@ Esta web no guarda datos, así que no necesita carpeta en `/mnt/datos/`.
 
 - Número de WhatsApp: en `site/index.html`, la línea `const WHATSAPP = "";` (con indicativo y sin `+`, p. ej. `573001234567`).
 - Productos y precios: lista `PRODUCTS` en `site/index.html`. Kits: lista `KITS`.
-- Fotos: en `site/img/`, y el campo `img` del producto.
+- Fotos: en `site/img/`, y el campo `img` del producto. Si cambias o reemplazas fotos, sube el número de `IMG_V` en `site/index.html` (por ejemplo `?v=2` → `?v=3`) para que los navegadores descarguen las nuevas.
 
 ## Flujo de trabajo
 

@@ -465,19 +465,21 @@ function addBtn(id){
   if (!n) return `<button class="add" data-add="${id}">Agregar</button>`;
   return `<span class="qty" role="group" aria-label="Cantidad"><button data-dec="${id}" aria-label="Quitar uno">−</button><output>${n}</output><button data-inc="${id}" aria-label="Agregar uno">+</button></span>`;
 }
+// Versión de las fotos: súbela cada vez que cambies imágenes, así los navegadores no usan las viejas guardadas.
+const IMG_V = "?v=2";
 const bigImg = p => p.img && p.img.startsWith("img/p/") ? p.img.replace("img/p/", "img/z/") : p.img;
 function priceHtml(p){
   return p ? `<span class="price">${fmt(p)}</span>` : `<span class="price ask">Precio por WhatsApp</span>`;
 }
 function photo(p){
-  if (p.img) return `<img src="${p.img}" alt="${esc(p.name)}" loading="lazy">`;
+  if (p.img) return `<img src="${p.img + IMG_V}" alt="${esc(p.name)}" loading="lazy">`;
   return `<div class="ph-empty" aria-hidden="true"><small>HGW</small>${esc(p.name.replace(/^Smilife /, ""))}</div>`;
 }
 
 function renderKits(){
   document.getElementById("kit-list").innerHTML = KITS.map(k => `
     <article class="kit" data-open="${k.id}">
-      <img src="${k.img}" alt="${esc(k.name)}" loading="lazy">
+      <img src="${k.img + IMG_V}" alt="${esc(k.name)}" loading="lazy">
       <div class="kit-body">
         <h3>${esc(k.name)}</h3>
         <p style="margin:0">${esc(k.text)}</p>
@@ -570,7 +572,7 @@ const cama = (lado, hojas) => `<svg class="cama ${lado}" viewBox="0 0 400 ${lado
 function openLightbox(id){
   const x = all.find(i => i.id === id); if (!x) return;
   const isKit = !!x.items;
-  const src = isKit ? x.img : bigImg(x);
+  const img = isKit ? x.img : bigImg(x), src = img && img + IMG_V;
   const nuevo = document.getElementById("lb").hidden;
   document.getElementById("lb-box").innerHTML = `
     <div class="lb-img${nuevo ? " entra" : ""}">${cama("atras", HOJAS_ATRAS)}${src ? `<img src="${src}" alt="${esc(x.name)}">` : photo(x)}${cama("frente", HOJAS_FRENTE)}</div>
