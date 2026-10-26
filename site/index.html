@@ -129,6 +129,10 @@ main .wrap{padding-block:40px 120px;display:grid;gap:56px}
 .lb-close{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));z-index:5;border:2px solid var(--line);width:44px;height:44px;border-radius:50%;background:var(--surface);color:var(--fg);font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgb(0 0 0 / .35)}
 @media (max-width:720px){.lb-box{grid-template-columns:1fr}.lb-img > img{max-height:42vh}.lb-img{padding:22px 22px 50px;min-height:0}.cama.atras{height:160px}.cama.frente{height:80px}}
 .add{border:0;background:var(--green-soft);color:var(--green);border-radius:10px;padding:9px 12px;font:800 .9rem var(--body);cursor:pointer}
+.acts{display:flex;align-items:center;gap:6px}
+.info{display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--wa);color:var(--wa);background:transparent;border-radius:10px;padding:7px 10px;font:800 .85rem var(--body);text-decoration:none;white-space:nowrap}
+.info:hover{background:var(--wa);color:var(--wa-fg)}
+.info svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .add.on{background:var(--green);color:var(--bg)}
 
 /* HGW + aviso */
@@ -188,7 +192,10 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
   .card .price{font-size:.98rem;color:var(--gold)}
   .card-foot{margin-top:2px;gap:6px}
   .card .add{padding:7px 10px;font-size:.8rem}
-  .card .qty button{width:28px;height:28px}
+  .card .info{padding:6px 7px}.card .info span{display:none}
+  .card .acts{width:100%;justify-content:space-between}
+  .card .qty button{width:24px}.card .qty output{min-width:18px}
+  .card .qty button{height:28px}
   .about h2{font-size:1.5rem}
   .cart-in{flex-wrap:nowrap}
   .cart-list{flex:1 1 auto;font-size:.82rem}
@@ -468,6 +475,11 @@ function addBtn(id){
 // Versión de las fotos: súbela cada vez que cambies imágenes, así los navegadores no usan las viejas guardadas.
 const IMG_V = "?v=2";
 const bigImg = p => p.img && p.img.startsWith("img/p/") ? p.img.replace("img/p/", "img/z/") : p.img;
+// Botón "Info": abre WhatsApp con una pregunta sobre ese producto.
+function infoBtn(x, label){
+  const msg = `Hola Anyta, quiero información sobre ${x.name}${x.size ? " (" + x.size + ")" : ""}.`;
+  return `<a class="info" href="${waLink(msg)}" target="_blank" rel="noopener" title="Pedir información por WhatsApp" aria-label="Pedir información de ${esc(x.name)} por WhatsApp">${svg("wa")}<span>${label ? "Pedir información" : "Info"}</span></a>`;
+}
 function priceHtml(p){
   return p ? `<span class="price">${fmt(p)}</span>` : `<span class="price ask">Precio por WhatsApp</span>`;
 }
@@ -484,7 +496,7 @@ function renderKits(){
         <h3>${esc(k.name)}</h3>
         <p style="margin:0">${esc(k.text)}</p>
         <div class="chips">${k.items.map(i => `<span class="chip">${esc(byId[i].name)}</span>`).join("")}</div>
-        <div class="price-row">${priceHtml(k.price)}${addBtn(k.id)}</div>
+        <div class="price-row">${priceHtml(k.price)}<div class="acts">${infoBtn(k)}${addBtn(k.id)}</div></div>
       </div>
     </article>`).join("");
 }
@@ -527,7 +539,7 @@ function renderGrid(){
         <span class="cat">${esc(p.cat)}</span>
         <h3>${esc(p.name)}</h3>
         <p>${esc(p.text)}${p.size ? " " + esc(p.size) + "." : ""}</p>
-        <div class="card-foot">${priceHtml(p.price)}${addBtn(p.id)}</div>
+        <div class="card-foot">${priceHtml(p.price)}<div class="acts">${infoBtn(p)}${addBtn(p.id)}</div></div>
       </div>
     </article>`).join("");
 }
@@ -581,7 +593,7 @@ function openLightbox(id){
       <h3 id="lb-title">${esc(x.name)}</h3>
       <p>${esc((DETAILS[x.id] && DETAILS[x.id].d) || x.text)}${x.size ? " " + esc(x.size) + "." : ""}</p>
       ${isKit ? `<div class="chips">${x.items.map(i => `<span class="chip">${esc(byId[i].name)}</span>`).join("")}</div>` : ""}
-      <div class="price-row">${priceHtml(x.price)}${addBtn(x.id)}</div>
+      <div class="price-row">${priceHtml(x.price)}<div class="acts">${infoBtn(x, true)}${addBtn(x.id)}</div></div>
       ${detailList(DETAILS[x.id])}
     </div>`;
   const lb = document.getElementById("lb");
