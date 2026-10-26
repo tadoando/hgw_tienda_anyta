@@ -21,7 +21,8 @@ Esta web no guarda datos, así que no necesita carpeta en `/mnt/datos/`.
 ## Flujo de trabajo
 
 - Desarrollo: carpeta compartida `Datos` → `Proyectos/HW_Anita/tienda-anyta` (en el ProBook: `/mnt/datos/compartido/Proyectos/HW_Anita/tienda-anyta`).
-- Código: repo privado `tadoando/hgw_tienda_anyta` (rama `main`). Claude sube los cambios al repo.
+- Código: repo público `tadoando/hgw_tienda_anyta` (rama `main`). Claude sube los cambios al repo.
+- La carpeta compartida es solo una copia de trabajo: antes de editar ahí, traer lo último con `git pull`, porque los cambios se hacen en GitHub y el servidor se actualiza desde `main`.
 - Producción: clon de solo lectura en `/opt/hgw_tienda_anyta`, que se actualiza con `git pull`.
 
 ## Despliegue en el ProBook (primera vez)
@@ -75,7 +76,8 @@ Esta web no guarda datos, así que no necesita carpeta en `/mnt/datos/`.
    curl -I http://192.168.80.27:8082/
    ```
 
-   La tienda queda en `http://192.168.80.27:<WEB_PORT>/` en la casa, y por Tailscale fuera de ella.
+   La tienda queda en `http://192.168.80.27:<WEB_PORT>/` en la casa. Desde internet se publica en
+   **https://anytashop.lved.work** con el túnel de Cloudflare `leved-server` (ruta `anytashop.lved.work → http://192.168.80.27:8082`, en el panel de Cloudflare).
 
 ## Actualizar
 
