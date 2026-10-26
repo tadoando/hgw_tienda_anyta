@@ -150,9 +150,53 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
 .cart-list{min-width:0;flex:1 1 260px;font-size:.92rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cart-list b{color:var(--fg)}
 @media (prefers-reduced-motion:no-preference){.add,.btn,.filters button{transition:background .15s,color .15s,transform .15s}.btn:hover{transform:translateY(-1px)}}
+/* Celular: vista tipo app (barra superior, categorías en columna a la izquierda, rejilla de 2) */
+.app-top,.rail,.app-cat{display:none}
+@media (max-width:720px){
+  :root{--rail:78px}
+  .hero,.trust,#kits,.sec-head > div:first-child,#filters{display:none}
+  .app-top{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:18;background:var(--surface);border-bottom:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(12px,env(safe-area-inset-left,0px))}
+  .app-top img{width:38px;height:38px;border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px var(--gold)}
+  .app-top b{display:block;font-family:var(--display);font-size:1.35rem;line-height:1.05}
+  .app-top small{display:block;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);font-weight:800}
+  .rail{display:flex;flex-direction:column;gap:4px;position:fixed;left:0;top:59px;bottom:0;z-index:15;width:var(--rail);padding:8px 6px 110px max(6px,env(safe-area-inset-left,0px));overflow-y:auto;background:var(--surface);border-right:1px solid var(--line);scrollbar-width:none}
+  .rail::-webkit-scrollbar{display:none}
+  .rail button,.rail a{position:relative;display:grid;justify-items:center;gap:4px;border:0;background:transparent;color:var(--muted);padding:9px 2px;border-radius:12px;font:800 .62rem/1.15 var(--body);letter-spacing:.04em;text-transform:uppercase;text-align:center;text-decoration:none;cursor:pointer}
+  .rail svg{width:30px;height:30px;padding:5px;border-radius:10px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .rail [aria-pressed="true"]{color:var(--fg)}
+  .rail [aria-pressed="true"] svg{background:var(--gold);color:var(--ink);box-shadow:0 4px 10px color-mix(in srgb,var(--gold) 40%,transparent)}
+  .rail [aria-pressed="true"]::before{content:"";position:absolute;left:-6px;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:var(--gold)}
+  .rail a{color:var(--wa);margin-top:6px}
+  main,footer{margin-left:var(--rail)}
+  main .wrap{padding:14px 12px 120px;gap:36px}
+  .sec-head{margin-bottom:10px}
+  .search{max-width:none;padding:9px 14px}
+  .app-cat{display:block;font-family:var(--display);font-size:1.6rem;margin:0 0 2px}
+  .count{margin-bottom:10px;font-size:.82rem}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{border-radius:14px}
+  .card .ph{aspect-ratio:1}
+  .card-body{padding:9px 10px 10px;gap:4px;grid-template-rows:auto 1fr auto}
+  .card .cat,.card p{display:none}
+  .card h3{font-size:.88rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .card .price{font-size:.98rem;color:var(--gold)}
+  .card-foot{margin-top:2px;gap:6px}
+  .card .add{padding:7px 10px;font-size:.8rem}
+  .card .qty button{width:28px;height:28px}
+  .about h2{font-size:1.5rem}
+  .cart-in{flex-wrap:nowrap}
+  .cart-list{flex:1 1 auto;font-size:.82rem}
+  .cart .btn{padding:10px 14px;font-size:.88rem;white-space:nowrap}
+}
 </style>
 </head>
 <body>
+
+<div class="app-top">
+  <img src="img/logo.jpg" alt="" width="38" height="38">
+  <div><small>Tienda de Anyta</small><b>¿Qué quieres hoy?</b></div>
+</div>
+<nav class="rail" id="rail" aria-label="Categorías"></nav>
 
 <header class="hero">
   <div class="wrap">
@@ -195,10 +239,11 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
         <p>Precios al público en Colombia, lista HGW 2026. Toca «Agregar» en lo que quieras y envía la lista completa en un solo mensaje.</p>
       </div>
       <div class="tools">
-        <input class="search" id="search" type="search" placeholder="Buscar producto, por ejemplo: café, jabón, turmalina" aria-label="Buscar producto">
+        <input class="search" id="search" type="search" placeholder="Buscar: café, jabón, turmalina…" aria-label="Buscar producto">
         <div class="filters" id="filters" role="group" aria-label="Filtrar por categoría"></div>
       </div>
     </div>
+    <h2 class="app-cat" id="app-cat"></h2>
     <p class="count" id="count"></p>
     <div class="grid" id="grid"></div>
   </section>
@@ -435,22 +480,43 @@ function renderKits(){
 }
 
 let filter = "Todos", query = "";
+const ICON = {
+  todo:'<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',
+  kit:'<path d="M4 9h16v11H4zM3 6h18v3H3zM12 6v14M12 6c-1.5-3-5-3-5-1s3 1 5 1c1.5-3 5-3 5-1s-3 1-5 1"/>',
+  cafe:'<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5zM16 10h1.5a2.5 2.5 0 0 1 0 5H16M8 3c0 1.5 1 1.5 1 3M12 3c0 1.5 1 1.5 1 3"/>',
+  dulce:'<path d="M9 9l6 6M8.5 8.5a5 5 0 1 1 7 7 5 5 0 0 1-7-7zM8.5 8.5 4 7l1-3 3 1zM15.5 15.5 20 17l-1 3-3-1z"/>',
+  personal:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  facial:'<path d="M12 3l1.8 4.6L18.5 9l-4.7 1.6L12 15l-1.8-4.4L5.5 9l4.7-1.4zM18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8zM6 16l.6 1.4 1.4.6-1.4.6L6 20l-.6-1.4L4 18l1.4-.6z"/>',
+  turm:'<path d="M7 4h10l4 5-9 11L3 9zM3 9h18M9.5 4 8 9l4 11 4-11-1.5-5"/>',
+  hogar:'<path d="M4 11 12 4l8 7M6 9.5V20h12V9.5M10 20v-5h4v5"/>',
+  wa:'<path d="M4 20l1.3-4A8 8 0 1 1 8 18.7z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 .8a4 4 0 0 1-1.8-1.8l.8-1-1-2z"/>'
+};
+const svg = k => `<svg viewBox="0 0 24 24" aria-hidden="true">${ICON[k]}</svg>`;
+const RAIL = [["Todos","Todo","todo"],["Kits","Kits","kit"],[C.cafe,"Cafés y bebidas","cafe"],[C.dulce,"Dulces","dulce"],[C.personal,"Cuidado personal","personal"],[C.facial,"Facial","facial"],[C.turm,"Turmalina","turm"],[C.hogar,"Hogar","hogar"]];
+const mobile = matchMedia("(max-width:720px)");
+mobile.addEventListener("change", () => { if (!mobile.matches && filter === "Kits"){ filter = "Todos"; renderFilters(); renderGrid(); } });
 function renderFilters(){
   const cats = ["Todos", ...Object.values(C)];
   document.getElementById("filters").innerHTML = cats.map(c =>
     `<button data-cat="${esc(c)}" aria-pressed="${c === filter}">${esc(c)}</button>`).join("");
+  document.getElementById("rail").innerHTML = RAIL.map(([c, label, ic]) =>
+    `<button data-cat="${esc(c)}" aria-pressed="${c === filter}">${svg(ic)}${esc(label)}</button>`).join("") +
+    `<a id="rail-wa" href="#" target="_blank" rel="noopener">${svg("wa")}WhatsApp</a>`;
+  const wa = document.getElementById("rail-wa"); if (wa) wa.href = waLink(orderMessage());
 }
 function renderGrid(){
   const q = norm(query.trim());
-  const list = PRODUCTS.filter(p => (filter === "Todos" || p.cat === filter) && (!q || norm(p.name + " " + p.text + " " + p.cat).includes(q)));
-  document.getElementById("count").textContent = list.length ? `${list.length} productos` : "No encontramos ese producto. Prueba con otra palabra o pregúntanos por WhatsApp.";
+  const src = filter === "Kits" ? KITS.map(k => ({...k, cat: "Kit"})) : PRODUCTS.filter(p => filter === "Todos" || p.cat === filter);
+  const list = src.filter(p => !q || norm(p.name + " " + p.text + " " + p.cat).includes(q));
+  document.getElementById("app-cat").textContent = filter === "Todos" ? "Todo el catálogo" : filter === "Kits" ? "Kits de bienestar" : filter;
+  document.getElementById("count").textContent = list.length ? `${list.length} ${filter === "Kits" ? "kits" : "productos"}` : "No encontramos ese producto. Prueba con otra palabra o pregúntanos por WhatsApp.";
   document.getElementById("grid").innerHTML = list.map(p => `
     <article class="card" data-open="${p.id}">
       <div class="ph">${photo(p)}</div>
       <div class="card-body">
         <span class="cat">${esc(p.cat)}</span>
         <h3>${esc(p.name)}</h3>
-        <p>${esc(p.text)} ${esc(p.size)}.</p>
+        <p>${esc(p.text)}${p.size ? " " + esc(p.size) + "." : ""}</p>
         <div class="card-foot">${priceHtml(p.price)}${addBtn(p.id)}</div>
       </div>
     </article>`).join("");
@@ -482,6 +548,7 @@ function renderCart(){
   const hero = document.getElementById("hero-wa");
   hero.href = link;
   hero.textContent = items.length ? "Enviar mi pedido por WhatsApp" : "Escríbenos por WhatsApp";
+  const wa = document.getElementById("rail-wa"); if (wa) wa.href = link;
 }
 function renderAll(){ renderKits(); renderGrid(); renderCart(); if (openId) openLightbox(openId); saveCart(); }
 
@@ -527,8 +594,8 @@ document.addEventListener("click", e => {
   if (add || inc){ const id = (add || inc).dataset.add || (add || inc).dataset.inc; cart.set(id, (cart.get(id) || 0) + 1); renderAll(); return; }
   if (dec){ const id = dec.dataset.dec, n = (cart.get(id) || 0) - 1; n > 0 ? cart.set(id, n) : cart.delete(id); renderAll(); return; }
   if (t.closest("#lb-close") || t.id === "lb"){ closeLightbox(); return; }
-  const f = t.closest("#filters button");
-  if (f){ filter = f.dataset.cat; renderFilters(); renderGrid(); return; }
+  const f = t.closest("#filters button, #rail button");
+  if (f){ filter = f.dataset.cat; renderFilters(); renderGrid(); if (f.closest("#rail")) window.scrollTo({top: 0}); return; }
   const card = t.closest("[data-open]");
   if (card && !t.closest("a,button")) openLightbox(card.dataset.open);
 });
