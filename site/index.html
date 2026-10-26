@@ -156,6 +156,34 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
 .cart-in{max-width:1120px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
 .cart-list{min-width:0;flex:1 1 260px;font-size:.92rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cart-list b{color:var(--fg)}
+button.cart-list{border:0;background:none;padding:0;text-align:left;font-family:inherit;cursor:pointer}
+button.cart-list:disabled{cursor:default}
+.cart-list u{color:var(--green);font-weight:800;text-underline-offset:3px}
+.cart-ask{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px;width:100%;font-weight:700}
+.cart-ask div{display:flex;gap:8px}
+.btn-line{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
+
+/* Panel "Tu pedido": abajo en celular, centrado en computador */
+.sheet{position:fixed;inset:0;z-index:45;display:flex;align-items:flex-end;justify-content:center;background:rgb(8 12 10 / .6)}
+.sheet-box{background:var(--surface);color:var(--fg);width:100%;max-width:560px;max-height:88vh;border-radius:18px 18px 0 0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (min-width:721px){.sheet{align-items:center;padding:16px}.sheet-box{border-radius:18px}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.sheet-head h2{font-size:1.7rem}
+.sheet-x{flex:none;border:0;width:42px;height:42px;border-radius:50%;background:var(--green-soft);color:var(--fg);font-size:1.5rem;line-height:1;cursor:pointer}
+.sheet-list{list-style:none;margin:0;padding:4px 20px;overflow:auto}
+.sheet-list li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.sheet-list li:last-child{border-bottom:0}
+.sheet-list img,.sheet-list .noimg{grid-row:span 2;width:56px;height:56px;border-radius:10px;object-fit:cover;background:var(--gold-soft)}
+.sheet-list b{font-size:.95rem;line-height:1.25}
+.sheet-list small{display:block;color:var(--muted);font-size:.82rem}
+.sheet-list .sub{font-weight:800;font-variant-numeric:tabular-nums;align-self:start}
+.row-ctl{grid-column:2 / 4;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.rm{border:0;background:none;color:var(--muted);font:700 .85rem var(--body);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 0}
+.sheet-foot{display:grid;gap:12px;padding:14px 20px 18px;border-top:1px solid var(--line)}
+.sheet-total{display:flex;justify-content:space-between;font-weight:800;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.sheet-btns{display:flex;flex-wrap:wrap;gap:10px}
+.sheet-btns .btn-wa{flex:1 1 220px;justify-content:center}
+.sheet-empty{padding:28px 0;text-align:center;color:var(--muted)}
 @media (prefers-reduced-motion:no-preference){.add,.btn,.filters button{transition:background .15s,color .15s,transform .15s}.btn:hover{transform:translateY(-1px)}}
 /* Celular: vista tipo app (barra superior, categorías en columna a la izquierda, rejilla de 2) */
 .app-top,.rail,.app-cat{display:none}
@@ -298,8 +326,26 @@ footer .wrap{padding-block:28px 110px;display:flex;flex-wrap:wrap;gap:12px 28px;
 
 <div class="cart" role="region" aria-label="Tu pedido">
   <div class="cart-in">
-    <div class="cart-list" id="cart-list" aria-live="polite">Tu pedido está vacío. Agrega productos del catálogo.</div>
+    <button class="cart-list" id="cart-list" type="button" aria-live="polite" aria-haspopup="dialog" disabled>Tu pedido está vacío. Agrega productos del catálogo.</button>
     <a class="btn btn-wa" id="send" href="#" target="_blank" rel="noopener">Enviar pedido por WhatsApp</a>
+    <div class="cart-ask" id="cart-ask" hidden>
+      <span>¿Ya enviaste tu pedido?</span>
+      <div><button class="btn btn-wa" type="button" data-clear>Sí, vaciar canasta</button><button class="btn btn-line" type="button" data-keep>No, seguir</button></div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-t">
+  <div class="sheet-box">
+    <div class="sheet-head"><h2 id="sheet-t">Tu pedido</h2><button class="sheet-x" type="button" data-sheet-close aria-label="Cerrar">×</button></div>
+    <ul class="sheet-list" id="sheet-list"></ul>
+    <div class="sheet-foot">
+      <div class="sheet-total"><span>Total</span><span id="sheet-total"></span></div>
+      <div class="sheet-btns">
+        <button class="btn btn-line" type="button" data-clear>Vaciar pedido</button>
+        <a class="btn btn-wa" id="sheet-send" href="#" target="_blank" rel="noopener">Enviar por WhatsApp</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -564,13 +610,26 @@ function renderCart(){
   const units = items.reduce((t, i) => t + i.n, 0);
   const total = items.reduce((t, i) => t + (i.price || 0) * i.n, 0);
   const el = document.getElementById("cart-list");
+  el.disabled = !items.length;
   if (!items.length){
     el.textContent = "Tu pedido está vacío. Agrega productos del catálogo.";
   } else {
-    el.innerHTML = `<b>${units} ${units === 1 ? "unidad" : "unidades"} · ${fmt(total)}:</b> ` + items.map(i => esc(`${i.n}× ${i.name}`)).join(", ");
+    el.innerHTML = `<b>${units} ${units === 1 ? "unidad" : "unidades"} · ${fmt(total)}</b> · <u>Ver y editar</u>`;
   }
   const link = waLink(orderMessage());
   document.getElementById("send").href = link;
+  document.getElementById("sheet-send").href = link;
+  document.getElementById("sheet-total").textContent = fmt(total);
+  document.getElementById("sheet-list").innerHTML = items.length ? items.map(i => `
+    <li>
+      ${i.img ? `<img src="${i.img + IMG_V}" alt="" loading="lazy">` : `<span class="noimg"></span>`}
+      <div><b>${esc(i.name)}</b><small>${i.price ? fmt(i.price) + " c/u" : "Precio por confirmar"}</small></div>
+      <span class="sub">${i.price ? fmt(i.price * i.n) : ""}</span>
+      <div class="row-ctl">${addBtn(i.id)}<button class="rm" type="button" data-remove="${i.id}">Quitar</button></div>
+    </li>`).join("") : `<li class="sheet-empty">Tu pedido está vacío.</li>`;
+  const ask = askClear && items.length;
+  document.getElementById("cart-ask").hidden = !ask;
+  el.hidden = document.getElementById("send").hidden = !!ask;
   const hero = document.getElementById("hero-wa");
   hero.href = link;
   hero.textContent = items.length ? "Enviar mi pedido por WhatsApp" : "Escríbenos por WhatsApp";
@@ -619,6 +678,13 @@ document.addEventListener("click", e => {
   const add = t.closest("[data-add]"), inc = t.closest("[data-inc]"), dec = t.closest("[data-dec]");
   if (add || inc){ const id = (add || inc).dataset.add || (add || inc).dataset.inc; cart.set(id, (cart.get(id) || 0) + 1); renderAll(); return; }
   if (dec){ const id = dec.dataset.dec, n = (cart.get(id) || 0) - 1; n > 0 ? cart.set(id, n) : cart.delete(id); renderAll(); return; }
+  const rm = t.closest("[data-remove]");
+  if (rm){ cart.delete(rm.dataset.remove); renderAll(); return; }
+  if (t.closest("[data-clear]")){ cart.clear(); askClear = false; closeSheet(); renderAll(); return; }
+  if (t.closest("[data-keep]")){ askClear = false; renderCart(); return; }
+  if (t.closest("#cart-list")){ openSheet(); return; }
+  if (t.closest("[data-sheet-close]") || t.id === "sheet"){ closeSheet(); return; }
+  if (t.closest("#send, #sheet-send, #hero-wa, #rail-wa")) markSent();
   if (t.closest("#lb-close") || t.id === "lb"){ closeLightbox(); return; }
   const f = t.closest("#filters button, #rail button");
   if (f){ filter = f.dataset.cat; renderFilters(); renderGrid(); goTop(); return; }
@@ -630,7 +696,16 @@ function goTop(){
   if (mobile.matches){ window.scrollTo(0, 0); document.scrollingElement && (document.scrollingElement.scrollTop = 0); }
   else document.getElementById("catalogo").scrollIntoView({block: "start"});
 }
-document.addEventListener("keydown", e => { if (e.key === "Escape" && openId) closeLightbox(); });
+// Panel del pedido y "¿Ya enviaste tu pedido?" al volver de WhatsApp.
+let askClear = false, sentPending = false, sheetFocus = null;
+function openSheet(){ const s = document.getElementById("sheet"); if (!s.hidden) return; sheetFocus = document.activeElement; s.hidden = false; s.querySelector(".sheet-x").focus(); }
+function closeSheet(){ const s = document.getElementById("sheet"); if (s.hidden) return; s.hidden = true; if (sheetFocus) sheetFocus.focus(); }
+function markSent(){ if (cart.size) sentPending = true; }
+function backFromWhatsApp(){ if (sentPending && document.visibilityState === "visible"){ sentPending = false; askClear = true; closeSheet(); renderCart(); } }
+document.addEventListener("visibilitychange", backFromWhatsApp);
+window.addEventListener("focus", backFromWhatsApp);
+
+document.addEventListener("keydown", e => { if (e.key !== "Escape") return; if (openId) closeLightbox(); else closeSheet(); });
 document.getElementById("search").addEventListener("input", e => { query = e.target.value; renderGrid(); });
 
 if (WHATSAPP) document.getElementById("foot-wa").textContent = "WhatsApp: +" + WHATSAPP.replace(/^(\d{2})(\d{3})(\d{3})(\d+)$/, "$1 $2 $3 $4");
