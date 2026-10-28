@@ -143,6 +143,13 @@ main .wrap{padding-block:40px 120px;display:grid;gap:56px}
 .howto{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:12px}
 .howto li{counter-increment:s;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start}
 .howto li::before{content:counter(s);width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--gold-soft);color:var(--gold);font-weight:800}
+.tarjeta{display:grid;gap:12px;justify-items:start;align-content:start}
+.tarjeta p{margin:0}
+.qr{display:grid;justify-items:center;gap:10px;padding:16px 16px 14px;background:#fff;color:#121a20;border-radius:16px;box-shadow:0 0 0 1px var(--line),0 10px 24px color-mix(in srgb,var(--fg) 10%,transparent);text-decoration:none}
+.qr img{width:170px;height:170px;display:block;image-rendering:pixelated}
+.qr span{display:grid;text-align:center;font-size:.8rem;color:#5d6b62;border-top:2px solid var(--gold);padding-top:8px;width:100%}
+.qr b{font-size:1rem;color:#121a20}
+.btn-ghost-dark{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--line)}
 .note{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
 
 footer{background:var(--ink);color:var(--ink-fg)}
@@ -307,6 +314,15 @@ button.cart-list:disabled{cursor:default}
         <li><span>Toca «Enviar pedido por WhatsApp». El mensaje sale escrito con tu lista.</span></li>
         <li><span>Te confirmamos precio, forma de pago y envío.</span></li>
       </ol>
+    </div>
+    <div class="tarjeta">
+      <h2>Tarjeta de Anyta</h2>
+      <p>Escanea el código con la cámara para guardar el contacto y las redes de Anyta Carmona.</p>
+      <a class="qr" href="https://oddscards.com/holam5" target="_blank" rel="noopener" aria-label="Abrir la tarjeta digital de Anyta Carmona">
+        <img src="img/qr-anyta.svg" alt="Código QR de la tarjeta digital de Anyta Carmona" width="200" height="200">
+        <span><b>Anyta Carmona</b>Líder de negocios online</span>
+      </a>
+      <a class="btn btn-ghost-dark" href="https://oddscards.com/holam5" target="_blank" rel="noopener">Abrir tarjeta digital</a>
     </div>
   </section>
 
